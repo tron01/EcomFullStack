@@ -1,6 +1,8 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes')
+const adminRoutes = require('./routes/adminRoutes')
 const { errorHandler } = require('./middlewares/errorHandler');
 const { clientUrl } = require('./config/config');
 const cors = require('cors');

@@ -43,3 +43,7 @@ exports.login = async (req, res, next) => {
 exports.logout = (req, res) => {
   res.clearCookie('token').json({ message: 'Logged out' });
 };
+
+exports.test = (req, res) => {
+  res.json({ message: 'Test endpoint...' });
+};
