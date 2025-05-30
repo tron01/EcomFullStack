@@ -3,8 +3,14 @@ const generateToken = require('../utils/generateToken');
 
 exports.register = async (req, res, next) => {
   try {
-    const { name, email, password, role } = req.body;
-    const user = await User.create({ name, email, password, role });
+    const { name, email, password } = req.body;
+
+    const user = await User.create({ 
+        name,
+        email, 
+        password, 
+        role: 'user' });
+    
     const token = generateToken(user);
 
     res.cookie('token', token, {
@@ -14,7 +20,7 @@ exports.register = async (req, res, next) => {
         maxAge: 86400000,
       })
       .status(201)
-      .json({ message: 'User registered', user: { id: user._id, name, email, role } });
+      .json({ message: 'User registered', user: { id: user._id, name, email, role: user.role } });
   } catch (err) {
     next(err);
   }
