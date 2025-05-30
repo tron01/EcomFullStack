@@ -3,7 +3,17 @@ const generateToken = require('../utils/generateToken');
 
 exports.register = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password , confirmPassword} = req.body;
+    
+    //  Validate password
+    // if (!password || password.length < 6) {
+    //   return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+    // }
+
+    // Confirm password match
+     if (password !== confirmPassword) {
+      return res.status(400).json({ message: 'Passwords do not match' });
+    }
 
     const user = await User.create({ 
         name,
