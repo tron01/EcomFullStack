@@ -10,6 +10,12 @@ exports.register = async (req, res, next) => {
     //   return res.status(400).json({ message: 'Password must be at least 6 characters long' });
     // }
 
+    // Check if email already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email already in use' });
+    }
+
     // Confirm password match
      if (password !== confirmPassword) {
       return res.status(400).json({ message: 'Passwords do not match' });
