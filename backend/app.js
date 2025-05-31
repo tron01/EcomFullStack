@@ -3,6 +3,10 @@ const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes')
 const adminRoutes = require('./routes/adminRoutes')
+const adminProductRoutes = require('./routes/adminProductRoutes'); 
+const userProductRoutes = require('./routes/userProductRoutes'); 
+const userCategoryRoutes = require('./routes/userCategoryRoutes');
+const adminCategoryRoutes = require('./routes/adminCategoryRoutes');
 const { errorHandler } = require('./middlewares/errorHandler');
 const { clientUrl } = require('./config/config');
 const cors = require('cors');
@@ -19,10 +23,25 @@ app.use(cors({
 app.use(express.json());        // Parse JSON bodies
 app.use(cookieParser());        // Parse cookies
 
-// Routes
+// auth Routes
 app.use('/api/auth', authRoutes);
+
+// User Routes
 app.use('/api/user', userRoutes);
+
+
+// Admin Routes
 app.use('/api/admin', adminRoutes);
+app.use('/api/admin/products', adminProductRoutes);
+app.use('/api/admin/categories', adminCategoryRoutes); // Admin category routes
+
+
+// Product routes
+app.use('/api/products', userProductRoutes);       // Public/user product routes
+
+// Category routes
+app.use('/api/categories', userCategoryRoutes);     // User/public category routes
+
 
 // Global error handler middleware
 app.use(errorHandler);
