@@ -118,7 +118,14 @@ exports.addOrUpdateProductImages = async (req, res) => {
         const oldThumb = await Image.findById(product.thumbnail);
         if (oldThumb) {
           const publicId = getPublicIdFromUrl(oldThumb.url);
-          if (publicId) await cloudinary.uploader.destroy(publicId);
+          try {
+            if (publicId) {
+              const result = await cloudinary.uploader.destroy(publicId);
+              console.log('Cloudinary image deletion result:', result);
+            }
+          } catch (cloudErr) {
+            console.log('Cloudinary image deletion error:', cloudErr);
+          }
           await oldThumb.deleteOne();
         }
       }
@@ -139,7 +146,14 @@ exports.addOrUpdateProductImages = async (req, res) => {
         const oldImages = await Image.find({ _id: { $in: product.detail.images } });
         for (const img of oldImages) {
           const publicId = getPublicIdFromUrl(img.url);
-          if (publicId) await cloudinary.uploader.destroy(publicId);
+          try {
+            if (publicId) {
+              const result = await cloudinary.uploader.destroy(publicId);
+              console.log('Cloudinary image deletion result:', result);
+            }
+          } catch (cloudErr) {
+            console.log('Cloudinary image deletion error:', cloudErr);
+          }
           await img.deleteOne();
         }
       }
@@ -175,18 +189,41 @@ exports.deleteProduct = async (req, res) => {
     if (product.thumbnail) {
       const thumbImg = await Image.findById(product.thumbnail);
       if (thumbImg) {
+        
         const publicId = getPublicIdFromUrl(thumbImg.url);
-        if (publicId) await cloudinary.uploader.destroy(publicId);
+        console.log('Deleting thumbnail with publicId:', publicId);
+
+        try {
+          if (publicId) {
+            const result = await cloudinary.uploader.destroy(publicId);
+            console.log('Cloudinary thumbnail deletion result:', result);
+          }
+        } catch (cloudErr) {
+          console.log('Cloudinary thumbnail deletion error:', cloudErr);
+        }   
+  
         await thumbImg.deleteOne();
       }
     }
 
     // Delete detail images from Cloudinary and DB
     if (product.detail && product.detail.images && product.detail.images.length > 0) {
+      
       const detailImages = await Image.find({ _id: { $in: product.detail.images } });
+      
       for (const img of detailImages) {
+        
         const publicId = getPublicIdFromUrl(img.url);
-        if (publicId) await cloudinary.uploader.destroy(publicId);
+      
+        try {
+          if (publicId) {
+            const result = await cloudinary.uploader.destroy(publicId);
+            console.log('Cloudinary image deletion result:', result);
+          }
+        } catch (cloudErr) {
+          console.log('Cloudinary image deletion error:', cloudErr);
+        }
+
         await img.deleteOne();
       }
       await ProductDetail.findByIdAndDelete(product.detail._id);
@@ -201,12 +238,42 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
-// Add this helper function at the top of the file after imports
+// helper function 
 function getPublicIdFromUrl(url) {
+
   if (!url) return null;
-  url = url.split('?')[0]; // Remove query params
-  const uploadIndex = url.indexOf('/upload/');
-  if (uploadIndex === -1) return null;
-  const publicIdWithExtension = url.substring(uploadIndex + 8);
-  return publicIdWithExtension.replace(/\.[^/.]+$/, ''); // Remove extension
+  
+  // Remove query params
+  url = url.split('?')[0];
+  
+    try {
+      // Match the pattern after the version number
+      const regex = /\/v\d+\/(.+)\./;
+      const matches = url.match(regex);
+      
+      if (matches && matches[1]) {
+        console.log('Extracted public ID:', matches[1]);
+        return matches[1]; // This will be "products/mbgqy8q0xbyivhdvo5bj"
+      }
+      
+      // Fallback to old method if regex doesn't match
+      const uploadIndex = url.indexOf('/upload/');
+      if (uploadIndex === -1) return null;
+      
+      // Get everything after /upload/
+      let pathAfterUpload = url.substring(uploadIndex + 8);
+      
+      // Remove version number if present (vXXXXXXXXX/)
+      pathAfterUpload = pathAfterUpload.replace(/^v\d+\//, '');
+      
+      // Remove extension
+      const publicId = pathAfterUpload.replace(/\.[^/.]+$/, '');
+      
+      console.log('Extracted public ID (fallback):', publicId);
+      return publicId;
+    } catch (err) {
+      console.log('Error extracting public ID:', err);
+      return null;
+    }
+
 }
