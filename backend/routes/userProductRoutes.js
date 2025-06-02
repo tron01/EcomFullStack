@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { getAllProducts, getProductById } = require('../controllers/productController');
+const { getAllProducts, getFullProductById } = require('../controllers/productController');
 
-// Get all products (public)
+// Get all products 
 router.get('/', getAllProducts);
 
-// Get product by ID (public)
-router.get('/:id', getProductById);
+// Returns full details: product, category, product detail, images
+router.get('/:id', getFullProductById);
+
 
 module.exports = router;

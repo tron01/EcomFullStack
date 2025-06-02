@@ -5,25 +5,23 @@ const cloudinary = require('../config/cloudinary');
 const Category = require('../models/Category'); 
 
 
-// Get all products with populated detail
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find()
-      .populate('detail')
-      .populate('category')
-      .populate('thumbnail');
+    const products = await Product.find().populate('thumbnail');
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-exports.getProductById = async (req, res) => {
+exports.getFullProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id)
-      .populate('detail')
       .populate('category')
-      .populate('thumbnail');
+      .populate({
+        path: 'detail',
+        populate: { path: 'images' }
+      });
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }

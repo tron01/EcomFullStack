@@ -33,6 +33,7 @@ app.use('/api/user', userRoutes);
 // Admin Routes
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/products', adminProductRoutes);
+
 app.use('/api/admin/categories', adminCategoryRoutes); // Admin category routes
 
 

@@ -4,7 +4,7 @@ const {
   updateProduct, 
   deleteProduct, 
   getAllProducts, 
-  getProductById,
+  getFullProductById,
   addOrUpdateProductImages,
 } = require('../controllers/productController');
 const { protect, authorizeRoles } = require('../middlewares/authMiddleware');
@@ -23,7 +23,7 @@ router.post('/:id/images',protect,authorizeRoles('admin'),
   addOrUpdateProductImages);
 
 router.get('/', protect, authorizeRoles('admin'), getAllProducts);
-router.get('/:id', protect, authorizeRoles('admin'), getProductById);
+router.get('/:id', protect, authorizeRoles('admin'), getFullProductById);
 router.delete('/:id', protect, authorizeRoles('admin'), deleteProduct);
 
 module.exports = router;
