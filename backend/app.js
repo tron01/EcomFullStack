@@ -8,6 +8,8 @@ const userProductRoutes = require('./routes/userProductRoutes');
 const userCategoryRoutes = require('./routes/userCategoryRoutes');
 const adminCategoryRoutes = require('./routes/adminCategoryRoutes');
 const adminPaymentMethodRoutes = require('./routes/adminPaymentMethodRoutes');
+const userPaymentMethodRoutes = require('./routes/userPaymentMethodRoutes'); // Add this line
+
 const { errorHandler } = require('./middlewares/errorHandler');
 const { clientUrl } = require('./config/config');
 const cors = require('cors');
@@ -43,6 +45,8 @@ app.use('/api/products', userProductRoutes);
 // Category routes
 app.use('/api/categories', userCategoryRoutes);    
 
+// Payment method routes for users
+app.use('/api/payment-methods', userPaymentMethodRoutes);
 
 // Global error handler middleware
 app.use(errorHandler);

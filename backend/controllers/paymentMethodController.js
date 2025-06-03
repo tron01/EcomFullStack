@@ -25,6 +25,16 @@ exports.getAllPaymentMethods = async (req, res) => {
   }
 };
 
+// Get all active payment methods (for users)
+exports.getAllActivePaymentMethods = async (req, res) => {
+  try {
+    const paymentMethods = await PaymentMethod.find({ isActive: true });
+    res.json(paymentMethods);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 // Get payment method by ID
 exports.getPaymentMethodById = async (req, res) => {
   try {
