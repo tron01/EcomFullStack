@@ -4,6 +4,31 @@ const Image = require('../models/Image');
 const cloudinary = require('../config/cloudinary');
 const Category = require('../models/Category'); 
 
+exports.getAllProductsForUsers = async (req, res) => {
+  try {
+    const products = await Product.find({ isActive: true }).populate('thumbnail');
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+exports.getFullProductByIdForUsers = async (req, res) => {
+  try {
+    const product = await Product.findOne({ _id: req.params.id, isActive: true })
+      .populate('category')
+      .populate({
+        path: 'detail',
+        populate: { path: 'images' }
+      });
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
 
 exports.getAllProducts = async (req, res) => {
   try {
