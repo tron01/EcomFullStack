@@ -7,6 +7,7 @@ const adminProductRoutes = require('./routes/adminProductRoutes');
 const userProductRoutes = require('./routes/userProductRoutes'); 
 const userCategoryRoutes = require('./routes/userCategoryRoutes');
 const adminCategoryRoutes = require('./routes/adminCategoryRoutes');
+const adminPaymentMethodRoutes = require('./routes/adminPaymentMethodRoutes');
 const { errorHandler } = require('./middlewares/errorHandler');
 const { clientUrl } = require('./config/config');
 const cors = require('cors');
@@ -33,15 +34,14 @@ app.use('/api/user', userRoutes);
 // Admin Routes
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/products', adminProductRoutes);
-
-app.use('/api/admin/categories', adminCategoryRoutes); // Admin category routes
-
+app.use('/api/admin/categories', adminCategoryRoutes); 
+app.use('/api/admin/payment-methods', adminPaymentMethodRoutes);
 
 // Product routes
-app.use('/api/products', userProductRoutes);       // Public/user product routes
+app.use('/api/products', userProductRoutes);      
 
 // Category routes
-app.use('/api/categories', userCategoryRoutes);     // User/public category routes
+app.use('/api/categories', userCategoryRoutes);    
 
 
 // Global error handler middleware
