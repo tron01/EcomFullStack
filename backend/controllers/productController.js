@@ -34,8 +34,7 @@ exports.getFullProductById = async (req, res) => {
 // Create Product (JSON only, no images)
 exports.createProduct = async (req, res) => {
   try {
-    const { name, price, category,stock,description,specifications, 
-       additionalInfo } = req.body;
+    const { name, price, category, stock, description, specifications, additionalInfo, isActive } = req.body;
 
     // Validate category exists
     const categoryExists = await Category.findById(category);
@@ -56,7 +55,8 @@ exports.createProduct = async (req, res) => {
       category,
       stock,
       description,
-      detail: detail._id
+      detail: detail._id,
+      isActive: isActive !== undefined ? isActive : true // default to true if not provided
     });
 
     res.status(201).json({ message: 'Product created', product });
@@ -231,6 +231,39 @@ exports.deleteProduct = async (req, res) => {
     await Product.findByIdAndDelete(req.params.id);
 
     res.json({ message: 'Product deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+exports.updateProductIsActive = async (req, res) => {
+  try {
+    const { isActive } = req.body;
+    console.log(isActive);
+    
+    if (typeof isActive !== 'boolean') {
+      return res.status(400).json({ message: 'isActive must be a boolean' });
+    }
+
+    const product = await Product.findByIdAndUpdate(req.params.id,{ isActive },{ new: true });
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    res.json({ message: 'Product isActive status updated', product });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+exports.getProductIsActive = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id).select('isActive');
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    res.json({ isActive: product.isActive });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
