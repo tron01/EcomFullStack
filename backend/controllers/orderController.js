@@ -88,3 +88,58 @@ exports.updateOrderStatus = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
+// Get user order by ID
+exports.getUserOrderById = async (req, res) => {
+  try {
+    const order = await Order.findOne({ _id: req.params.id, user: req.user._id })
+      .populate('paymentMethod')
+      .populate({
+        path: 'items',
+        populate: { path: 'product' }
+      });
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Get all orders for the current user
+exports.getUserOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({ user: req.user._id })
+      .populate('paymentMethod')
+      .populate({
+        path: 'items',
+        populate: { path: 'product' }
+      });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Allow user to cancel their order
+exports.cancelUserOrder = async (req, res) => {
+  try {
+    const order = await Order.findOneAndUpdate(
+      { _id: req.params.id, user: req.user._id },
+      { status: 'cancelled' },
+      { new: true }
+    )
+      .populate('paymentMethod')
+      .populate({
+        path: 'items',
+        populate: { path: 'product' }
+      });
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    res.json({ message: 'Order cancelled', order });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
