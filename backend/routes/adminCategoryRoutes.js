@@ -1,3 +1,14 @@
+
+const express = require('express');
+const router = express.Router();
+const {
+  createCategory,
+  getAllCategories,
+  getCategoryById,
+  updateCategory,
+  deleteCategory
+} = require('../controllers/categoryController');
+const { protect, authorizeRoles } = require('../middlewares/authMiddleware');
 /**
  * @swagger
  * /admin/categories:
@@ -101,17 +112,6 @@
  *       404:
  *         description: Category not found
  */
-const express = require('express');
-const router = express.Router();
-const {
-  createCategory,
-  getAllCategories,
-  getCategoryById,
-  updateCategory,
-  deleteCategory
-} = require('../controllers/categoryController');
-const { protect, authorizeRoles } = require('../middlewares/authMiddleware');
-
 // Admin only: All routes
 router.get('/', protect, authorizeRoles('admin'), getAllCategories);
 router.get('/:id', protect, authorizeRoles('admin'), getCategoryById);

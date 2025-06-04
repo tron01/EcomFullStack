@@ -10,6 +10,8 @@ const adminCategoryRoutes = require('./routes/adminCategoryRoutes');
 const adminPaymentMethodRoutes = require('./routes/adminPaymentMethodRoutes');
 const userPaymentMethodRoutes = require('./routes/userPaymentMethodRoutes'); // Add this line
 const { swaggerUi, swaggerSpec } = require('./swagger');
+const adminOrderRoutes = require('./routes/adminOrderRoutes');
+const userOrderRoutes = require('./routes/userOrderRoutes');
 
 const { errorHandler } = require('./middlewares/errorHandler');
 const { clientUrl } = require('./config/config');
@@ -48,6 +50,9 @@ app.use('/api/categories', userCategoryRoutes);
 
 // Payment method routes for users
 app.use('/api/payment-methods', userPaymentMethodRoutes);
+
+app.use('/api/admin/orders', adminOrderRoutes);
+app.use('/api/orders', userOrderRoutes); 
 
 // Swagger docs route (add before error handler)
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
