@@ -50,7 +50,7 @@ router.get('/products/:id/is-active', protect, authorizeRoles('admin'), getProdu
 router.post('/products/:id/images',protect,authorizeRoles('admin'),
   upload.fields([
     { name: 'thumbnail', maxCount: 1 },
-    { name: 'images', maxCount: 3 }
+    { name: 'images', maxCount: 5 }
   ]),
   addOrUpdateProductImages);
 router.get('/products', protect, authorizeRoles('admin'), getAllProducts);
