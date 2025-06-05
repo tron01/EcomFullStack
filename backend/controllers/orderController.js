@@ -1,6 +1,4 @@
 const Order = require('../models/Order');
-const OrderItem = require('../models/OrderItem');
-
 
 // Get all orders (admin)
 exports.getAllOrders = async (req, res) => {
@@ -50,16 +48,37 @@ exports.getOrderDetailsById = async (req, res) => {
 
 // Update order status (admin)
 exports.updateOrderStatus = async (req, res) => {
-  try {
+  
+  try {  
+    
+    const OrderStatus = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
     const { status } = req.body;
-    const order = await Order.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true }
-    ).populate('user').populate('paymentMethod').populate({
-      path: 'items',
-      populate: { path: 'product' }
-    });
+
+    if (!OrderStatus.includes(status)) {
+      return res.status(400).json({ message: 'Invalid status value' });
+    }
+
+    const order = await Order.findByIdAndUpdate(req.params.id,{ status },{ new: true , runValidators: true })
+      .populate({
+        path:'user',
+        select:'name'
+      })
+      .populate({
+        path:'paymentMethod',
+        select: 'name'
+      })
+      .populate({
+        path: 'items',
+        populate:{ 
+            path: 'product',
+            select : 'name thumbnail',
+              populate : {
+                 path : 'thumbnail',
+                 select : 'url'
+              } 
+           }
+      });
+
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
