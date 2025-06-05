@@ -4,7 +4,7 @@ const { port, mongoUri } = require('./config/config');
 
 mongoose
   .connect(mongoUri)
-  .then(() => {
+  .then(async () => {
     app.listen(port, () => {
       console.log(`Server running on port ${port}`);
     });
