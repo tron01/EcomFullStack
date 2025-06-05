@@ -60,11 +60,11 @@ exports.checkout = async (req, res) => {
     let transaction = null;
 
     switch (method.name.toLowerCase()) {
-      case 'credit card': // Stripe
-        const amount = Math.round(cart.totalPrice * 100); // cents
+      case 'stripe': // Stripe
+        const amount = Math.round(cart.totalPrice * 100); // paise
         const intent = await stripe.paymentIntents.create({
           amount,
-          currency: 'usd',
+          currency: 'inr',
           metadata: { orderId: order._id.toString(), userId },
         });
 
@@ -76,7 +76,7 @@ exports.checkout = async (req, res) => {
           provider: 'stripe',
           providerTransactionId: intent.id,
           amount: cart.totalPrice,
-          currency: 'usd',
+          currency: 'inr',
           status: 'pending',
           responseData: intent,
         }).save({ session });
