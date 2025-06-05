@@ -6,11 +6,9 @@ const OrderItem = require('../models/OrderItem');
 exports.getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
-      .populate('user')
-      .populate('paymentMethod')
       .populate({
-        path: 'items',
-        populate: { path: 'product' }
+        path: 'user',
+        select:'name'
       });
     res.json(orders);
   } catch (error) {
@@ -19,14 +17,27 @@ exports.getAllOrders = async (req, res) => {
 };
 
 // Get order by ID (admin)
-exports.getOrderById = async (req, res) => {
+exports.getOrderDetailsById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
-      .populate('user')
-      .populate('paymentMethod')
+      .populate({
+        path:'user',
+        select:'name'
+      })
+      .populate({
+        path:'paymentMethod',
+        select: 'name'
+      })
       .populate({
         path: 'items',
-        populate: { path: 'product' }
+        populate:{ 
+            path: 'product',
+            select : 'name thumbnail',
+              populate : {
+                 path : 'thumbnail',
+                 select : 'url'
+              } 
+           }
       });
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
@@ -62,7 +73,11 @@ exports.updateOrderStatus = async (req, res) => {
 exports.getUserOrderById = async (req, res) => {
   try {
     const order = await Order.findOne({ _id: req.params.id, user: req.user.id })
-       .populate({
+      .populate({
+        path:'user',
+        select:'name'
+      }) 
+      .populate({
         path: 'paymentMethod',
         select: 'name'
       })
@@ -91,6 +106,10 @@ exports.getUserOrders = async (req, res) => {
   try {
     const orders = await Order.find({ user: req.user.id })
     .populate({
+      path:'user',
+      select:'name'
+    })
+    .populate({
         path: 'paymentMethod',
         select: 'name' // only get the 'name' field
       })
@@ -118,7 +137,7 @@ exports.cancelUserOrder = async (req, res) => {
   try {
     const order = await Order.findOneAndUpdate({ _id: req.params.id,
        user: req.user.id },{ status: 'cancelled' },{ new: true })
-       
+
       .populate({
         path: 'paymentMethod',
         select: 'name' // only get the 'name' field

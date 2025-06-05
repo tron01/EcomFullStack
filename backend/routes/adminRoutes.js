@@ -22,7 +22,7 @@ const {
 const upload = require('../middlewares/upload');
 const {
   getAllOrders,
-  getOrderById,
+  getOrderDetailsById,
   updateOrderStatus
 } = require('../controllers/orderController');
 const {
@@ -63,9 +63,9 @@ router.post('/categories', protect, authorizeRoles('admin'), createCategory);
 router.put('/categories/:id', protect, authorizeRoles('admin'), updateCategory);
 router.delete('/categories/:id', protect, authorizeRoles('admin'), deleteCategory);
 //Orders
-router.get('/order/', protect, authorizeRoles('admin'), getAllOrders);
-router.get('/order/:id', protect, authorizeRoles('admin'), getOrderById);
-router.patch('/order/:id', protect, authorizeRoles('admin'), updateOrderStatus);
+router.get('/orders', protect, authorizeRoles('admin'), getAllOrders);
+router.get('/orders/:id', protect, authorizeRoles('admin'), getOrderDetailsById);
+router.patch('/orders/:id', protect, authorizeRoles('admin'), updateOrderStatus);
 //Payment methods
 router.post('/payment-methods/', protect, authorizeRoles('admin'), createPaymentMethod); // Create a new payment method
 router.get('/payment-methods/', protect, authorizeRoles('admin'), getAllPaymentMethods);// Get all payment methods
