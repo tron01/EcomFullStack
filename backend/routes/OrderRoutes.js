@@ -58,16 +58,6 @@ module.exports = router;
  *         schema:
  *           type: string
  *         description: Order ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               status:
- *                 type: string
- *                 enum: [cancelled]
  *     responses:
  *       200:
  *         description: Order cancelled

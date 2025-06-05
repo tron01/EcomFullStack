@@ -154,30 +154,49 @@ exports.getUserOrders = async (req, res) => {
 // Allow user to cancel their order
 exports.cancelUserOrder = async (req, res) => {
   try {
-    const order = await Order.findOneAndUpdate({ _id: req.params.id,
-       user: req.user.id },{ status: 'cancelled' },{ new: true })
+    // Step 1: Find the order first
+    const order = await Order.findOne({
+      _id: req.params.id,
+      user: req.user.id
+    });
 
-      .populate({
-        path: 'paymentMethod',
-        select: 'name' // only get the 'name' field
-      })
-      .populate({
-        path: 'items',
-          populate: {
-            path: 'product',
-              select: 'name thumbnail',// only these fields will be returned
-                  populate: {
-                    path: 'thumbnail',
-                      select: 'url' // only get image URL from thumbnail
-                  }
-          }
-       }
-    );
+    // Step 2: Check if order exists
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
+
+    // Step 3: Allow cancellation only if status is 'pending' or 'confirmed'
+    if (!['pending', 'confirmed'].includes(order.status)) {
+      return res.status(400).json({
+        message: `Order cannot be cancelled in '${order.status}' state`
+      });
+    }
+
+    // Step 4: Update the order status to 'cancelled'
+    order.status = 'cancelled';
+    await order.save();
+
+    // Step 5: Populate related fields
+    await order.populate([{
+       path: 'paymentMethod', 
+       select: 'name' },
+       {
+         path: 'items',
+         populate: {
+            path: 'product',
+            select: 'name thumbnail',
+              populate: { 
+                path: 'thumbnail', 
+                select: 'url' 
+              }
+            }
+        }]);
+
+    // Step 6: Send response
     res.json({ message: 'Order cancelled', order });
+    
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
