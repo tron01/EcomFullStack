@@ -6,14 +6,17 @@ const userSchema = new mongoose.Schema({
   email: { type: String, unique: true },
   password: String,
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
+  resetPasswordToken: String,
+  resetPasswordExpire: Date,
+}, {
+  timestamps: true,  
 });
 
-userSchema.pre('save', async function () {
+userSchema.pre('save', async function (next) {
   if (this.isModified('password')) {
     this.password = await bcrypt.hash(this.password, 10);
   }
+  next();
 });
 
 userSchema.methods.comparePassword = function (password) {
