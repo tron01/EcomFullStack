@@ -1,7 +1,6 @@
 const crypto = require('crypto');
-const bcrypt = require('bcryptjs');
 const User = require('../models/User');
-const { sendPasswordResetEmail } = require('../utils/mailgun');
+const { sendPasswordResetEmail } = require('../utils/mailService');
 
 // POST /forgot-password
 exports.forgotPassword = async (req, res) => {
@@ -10,8 +9,8 @@ exports.forgotPassword = async (req, res) => {
   if (!user) return res.status(404).json({ message: 'User not found' });
 
   const token = crypto.randomBytes(32).toString('hex');
-  user.resetToken = token;
-  user.resetTokenExpiry = Date.now() + 1000 * 60 * 15; // 15 min
+  user.resetPasswordToken = token;
+  user.resetPasswordExpire = Date.now() + 1000 * 60 * 15; // 15 min
   await user.save();
 
   await sendPasswordResetEmail(email, token);
@@ -20,18 +19,18 @@ exports.forgotPassword = async (req, res) => {
 
 // POST /reset-password
 exports.resetPassword = async (req, res) => {
-  const { token, newPassword } = req.body;
+  const { token, newpassword } = req.body;
 
   const user = await User.findOne({
-    resetToken: token,
-    resetTokenExpiry: { $gt: Date.now() },
+    resetPasswordToken: token,
+    resetPasswordExpire: { $gt: Date.now() },
   });
 
   if (!user) return res.status(400).json({ message: 'Invalid or expired token' });
 
-  user.password = await bcrypt.hash(newPassword, 10);
-  user.resetToken = null;
-  user.resetTokenExpiry = null;
+  user.password = newpassword;
+  user.resetPasswordToken = null;
+  user.resetPasswordExpire = null;
   await user.save();
 
   res.json({ message: 'Password updated successfully' });
