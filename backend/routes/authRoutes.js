@@ -51,7 +51,7 @@ module.exports = router;
  *               token:
  *                 type: string
  *                 example: "reset-token-from-email"
- *               password:
+ *               newpassword:
  *                 type: string
  *                 example: "newpassword123"
  *     responses:
