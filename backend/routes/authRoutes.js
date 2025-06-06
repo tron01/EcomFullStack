@@ -80,6 +80,9 @@ module.exports = router;
  *                 type: string
  *               password:
  *                 type: string
+ *               confirmPassword:
+ *                 type: string
+ *                 example: password123
  *     responses:
  *       201:
  *         description: User registered
