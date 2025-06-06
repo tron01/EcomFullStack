@@ -10,7 +10,7 @@ const options = {
       description: 'API documentation for EcomFullStack project',
     },
     servers: [
-      { url: 'http://localhost:5000/api' }
+      { url: 'https://ecomfullstack-nj0g.onrender.com/api' }
     ],
     components: {
       securitySchemes: {
