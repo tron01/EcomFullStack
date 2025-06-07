@@ -69,3 +69,10 @@ exports.logout = (req, res) => {
 exports.test = (req, res) => {
   res.json({ message: 'Test endpoint...' });
 };
+exports.getMe = (req, res) => {
+
+  const { id,role } = req.user;
+
+  res.json({ id,role });
+
+};

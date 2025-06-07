@@ -1,5 +1,5 @@
 const express = require('express');
-const { register, login, logout  } = require('../controllers/authController');
+const { register, login, logout ,getMe   } = require('../controllers/authController');
 const { protect } = require('../middlewares/authMiddleware');
 const {forgotPassword,resetPassword} = require('../controllers/forgotPasswordController');
 
@@ -7,6 +7,8 @@ const router = express.Router();
 router.post('/register', register);
 router.post('/login', login);
 router.post('/logout', protect, logout);
+
+router.get('/me', protect, getMe);
 
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
@@ -125,6 +127,20 @@ module.exports = router;
  *     responses:
  *       200:
  *         description: Logout successful
+ *       401:
+ *         description: Unauthorized
+ */
+/**
+ * @swagger
+ * /auth/me:
+ *   get:
+ *     summary: Get the currently authenticated user
+ *     tags: [Auth]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Current user data
  *       401:
  *         description: Unauthorized
  */
